@@ -1,7 +1,6 @@
 {
   pkgs,
   nixglhostRustPackages,
-  nixglhostRustPackagesNoPython,
   inputs,
   externalRustPackages,
 }:
@@ -19,7 +18,7 @@ let
     name = "solana-authorizer";
   };
 
-  solana = inputs.solana-pkgs.packages.${pkgs.system}.default;
+  solana = inputs.solana-pkgs.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
   layeringPipeline = pkgs.writeText "reverse-popularity-layering.json" ''
     [
@@ -85,7 +84,6 @@ let
           "NVIDIA_VISIBLE_DEVICES=all"
           "LOGNAME=root"
           "TORCHINDUCTOR_CACHE_DIR=/tmp/torchinductor"
-          "TRITON_LIBCUDA_PATH=/usr/lib64"
           "TRITON_HOME=/tmp/triton"
           "PYTHONUNBUFFERED=1"
         ];
@@ -126,7 +124,6 @@ let
           "LD_LIBRARY_PATH=/lib:/usr/lib"
           "LOGNAME=root"
           "TORCHINDUCTOR_CACHE_DIR=/tmp/torchinductor"
-          "TRITON_LIBCUDA_PATH=/usr/lib64"
           "TRITON_HOME=/tmp/triton"
           "PYTHONUNBUFFERED=1"
         ];
@@ -143,7 +140,7 @@ let
 
     docker-psyche-solana-test-client-no-python = mkSolanaTestClientImage {
       imageName = "psyche-solana-test-client-no-python";
-      solanaClientPackage = nixglhostRustPackagesNoPython."psyche-solana-client-nixglhost-no-python";
+      solanaClientPackage = nixglhostRustPackages."psyche-solana-client-nopython-nixglhost";
     };
 
     docker-psyche-solana-test-validator = pkgs.dockerTools.streamLayeredImage {
@@ -198,7 +195,7 @@ let
           "NVIDIA_VISIBLE_DEVICES=all"
           "LOGNAME=root"
           "TORCHINDUCTOR_CACHE_DIR=/tmp/torchinductor"
-          "TRITON_LIBCUDA_PATH=/usr/lib64"
+          "TRITON_=/usr/lib64"
           "TRITON_HOME=/tmp/triton"
           "PYTHONUNBUFFERED=1"
         ];
