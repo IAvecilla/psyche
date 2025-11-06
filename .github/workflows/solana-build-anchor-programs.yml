@@ -73,7 +73,7 @@ jobs:
           export PSYCHE_HOME=$(pwd)
           echo "Building validator image"
           nix build .#docker-psyche-solana-test-validator --impure --out-link result
-          ./result | docker load
+          docker load < ./result
 
           echo "Saving validator image to tar.gz"
           docker save psyche-solana-test-validator:latest | gzip > validator-image.tar.gz

@@ -33,7 +33,7 @@ let
       imageName,
       solanaClientPackage,
     }:
-    pkgs.dockerTools.streamLayeredImage {
+    pkgs.dockerTools.buildLayeredImage {
       name = imageName;
       tag = "latest";
 
@@ -89,10 +89,12 @@ let
         ];
         Entrypoint = [ "/bin/client_test_entrypoint.sh" ];
       };
+
+      inherit layeringPipeline;
     };
 
   dockerPackages = {
-    docker-psyche-solana-client = pkgs.dockerTools.streamLayeredImage {
+    docker-psyche-solana-client = pkgs.dockerTools.buildLayeredImage {
       name = "psyche-solana-client";
       tag = "latest";
 
@@ -143,7 +145,7 @@ let
       solanaClientPackage = nixglhostRustPackages."psyche-solana-client-nopython-nixglhost";
     };
 
-    docker-psyche-solana-test-validator = pkgs.dockerTools.streamLayeredImage {
+    docker-psyche-solana-test-validator = pkgs.dockerTools.buildLayeredImage {
       name = "psyche-solana-test-validator";
       tag = "latest";
 
@@ -176,9 +178,11 @@ let
           "8900/tcp" = { };
         };
       };
+
+      inherit layeringPipeline;
     };
 
-    docker-psyche-centralized-client = pkgs.dockerTools.streamLayeredImage {
+    docker-psyche-centralized-client = pkgs.dockerTools.buildLayeredImage {
       name = "psyche-centralized-client";
       tag = "latest";
 
@@ -200,6 +204,8 @@ let
           "PYTHONUNBUFFERED=1"
         ];
       };
+
+      inherit layeringPipeline;
     };
   };
 in

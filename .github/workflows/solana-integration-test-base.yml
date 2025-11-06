@@ -78,20 +78,17 @@ jobs:
           echo "Disk space before client build"
           df -h
 
-          # Calculate the derivation hash
-          echo "Calculating derivation path"
-          DRV_PATH=$(nix eval --raw .#docker-psyche-solana-test-client-no-python.drvPath)
-          echo "Derivation path: $DRV_PATH"
+          nix config show
 
-          OUT_PATH=$(nix derivation show $DRV_PATH | jq -r '.[].outputs.out.path')
-          echo "Output path: $OUT_PATH"
+          # pull deps from garnix cache - never build locally
+          DRV=$(nix eval --raw .#docker-psyche-solana-test-client-no-python.drvPath)
+          nix-store --realise $(nix-store -qR $DRV | grep -v "$(basename $DRV)") --max-jobs 0
 
-          # download from Garnix cache first
-          echo "Attempting to fetch from Garnix cache"
-          nix-store --realise $OUT_PATH --option substitute true --option max-jobs 0
+          # then build the actual derivation
+          nix build .#docker-psyche-solana-test-client-no-python
 
           # Load the image into Docker
-          $OUT_PATH | docker load
+          docker load ./result
 
           echo "Disk space after client build"
           df -h

@@ -2,7 +2,7 @@
 set -eu
 
 IMAGE_PATH=$(cat image-path.txt)
-"$IMAGE_PATH" | docker load
+docker load < "$IMAGE_PATH"
 IMAGE_ID=$(docker images -q | head -n1)
 docker tag $IMAGE_ID $DOCKER_REPOSITORY:latest
 docker push $DOCKER_REPOSITORY
