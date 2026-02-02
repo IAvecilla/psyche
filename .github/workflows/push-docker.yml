@@ -42,10 +42,15 @@ jobs:
 
       - name: Download image from Garnix cache
         run: |
-          nix build .#docker-psyche-solana-client --no-link --print-out-paths --max-jobs 0 > image-path.txt
+          nix build .#docker-psyche-solana-client --no-link --print-out-paths > image-path.txt
 
-      - name: Check disk space after download
-        run: df -h
+      - name: Check disk space and closure size after download
+        run: |
+          df -h
+          echo "--- Nix store closure size ---"
+          nix path-info -rSh .#docker-psyche-solana-client 2>/dev/null | sort -h -k2 | tail -20
+          echo "--- Total Nix store size ---"
+          du -sh /nix/store
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
