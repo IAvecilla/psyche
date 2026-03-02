@@ -40,6 +40,18 @@ pub enum LLMArchitecture {
     HfLlama,
     HfDeepseek,
     HfAuto,
+    Torchtitan,
+}
+
+impl std::fmt::Display for LLMArchitecture {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LLMArchitecture::HfLlama => f.write_str("HfLlama"),
+            LLMArchitecture::HfDeepseek => f.write_str("HfDeepseek"),
+            LLMArchitecture::HfAuto => f.write_str("HfAuto"),
+            LLMArchitecture::Torchtitan => f.write_str("Torchtitan"),
+        }
+    }
 }
 
 #[derive(
@@ -52,6 +64,7 @@ pub enum LLMArchitecture {
     Serialize,
     Deserialize,
     InitSpace,
+    PartialEq,
     TS,
 )]
 #[repr(C)]
@@ -74,7 +87,9 @@ pub enum LLMTrainingDataType {
 )]
 #[repr(C)]
 #[allow(clippy::large_enum_variant)]
+#[derive(Default)]
 pub enum LLMTrainingDataLocation {
+    #[default]
     Dummy,
     Server(FixedString<{ SOLANA_MAX_STRING_LEN }>),
     Local(FixedString<{ SOLANA_MAX_URL_STRING_LEN }>),
@@ -82,12 +97,6 @@ pub enum LLMTrainingDataLocation {
     /// link to a JSON file that deserializes to a Vec<LLMTrainingDataLocationAndWeight>
     WeightedHttp(FixedString<{ SOLANA_MAX_URL_STRING_LEN }>),
     Preprocessed(FixedString<{ SOLANA_MAX_URL_STRING_LEN }>),
-}
-
-impl Default for LLMTrainingDataLocation {
-    fn default() -> Self {
-        Self::Dummy
-    }
 }
 
 #[derive(

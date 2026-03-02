@@ -1,8 +1,7 @@
-{ lib, ... }:
+{ ... }:
 {
   perSystem =
     {
-      system,
       pkgs,
       self',
       ...
@@ -24,7 +23,7 @@
               rustWorkspaceArgsWithPython
               // {
                 inherit cargoArtifacts;
-
+                RUST_BACKTRACE = "full";
                 RUST_LOG = "info,psyche=trace";
                 partitions = 1;
                 partitionType = "count";
@@ -50,9 +49,10 @@
           workspace-test-parallelism = testWithProfile "parallelism";
 
           validate-all-configs =
-            pkgs.runCommandNoCC "validate-configs"
+            pkgs.runCommand "validate-configs"
               { nativeBuildInputs = [ self'.packages.psyche-centralized-server ]; }
               ''
+                export NIXGL_HOST_CACHE_DIR=$TMPDIR/nixglhost
                 dir="${../config}"
                 if [ ! -d "$dir" ]; then
                   echo "config dir $dir does not exist."

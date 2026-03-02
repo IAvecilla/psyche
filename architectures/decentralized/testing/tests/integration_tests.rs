@@ -9,8 +9,8 @@ use std::{sync::Arc, time::Duration};
 
 use bollard::container::StartContainerOptions;
 use bollard::{Docker, container::KillContainerOptions};
-use psyche_client::IntegrationTestLogMarker;
 use psyche_coordinator::{RunState, model::Checkpoint};
+use psyche_core::IntegrationTestLogMarker;
 use psyche_decentralized_testing::docker_setup::e2e_testing_setup_subscription;
 use psyche_decentralized_testing::{
     CLIENT_CONTAINER_PREFIX, NGINX_PROXY_PREFIX,
@@ -301,8 +301,7 @@ async fn test_rejoining_client_delay() {
                    panic!("{}", e);
                }
                let current_epoch = solana_client.get_current_epoch().await;
-               let current_step = solana_client.get_last_step().await;
-               if current_epoch >= 1 && current_step > 25 {
+               if current_epoch > 1 {
                     panic!("Second epoch started and the clients did not get the model");
                }
            }
@@ -771,7 +770,7 @@ async fn test_solana_subscriptions() {
     // skip the first 3 events since init subscriptions can vary the order
     subscription_events = subscription_events[3..].into();
     subscription_events.dedup();
-    let expected_subscription_events = vec![
+    let expected_subscription_events = [
         // init subscriptions
         (
             format!(r#""ws://{NGINX_PROXY_PREFIX}-2:8902/ws/""#),
